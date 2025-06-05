@@ -1,0 +1,49 @@
+{% extends "forum/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container-forum">
+    <h2 class="carta-title forum-title">{{ object.title }}</h2>
+        {% if object.author == user %}
+                <a class="forum-create div-profil-btn2" href="{% url 'catalog:post-delete' object.id %}">Удалить тему</a>
+        {% endif %}
+    <div class="post-form post-form2">
+        <nav class="body-img">
+            <a  href="{% url 'profile' username=object.author.profile.user.username %}">
+                <img class="index-div-profil-round" src="{{ object.author.profile.image.url }}" height="50">
+            </a>
+            <div>
+                <p class="post-comment">{{ object.body }}</p>
+            </div>
+        </nav>
+        <p class="post-date post-date2">{{ object.timestamp }}</p>
+        <div class="post-line"></div>
+    {% for comment in comments %}
+         <nav class="body-img">
+            <div>
+                <a href="{% url 'profile' username=comment.author.profile.user.username %}">
+                    <img class="index-div-profil-round" src="{{ comment.author.profile.image.url }}">
+                </a>
+            </div>
+            <div>
+                <p>{{ comment.body }}</p>
+            </div>
+             </nav>
+        <p class="post-date post-date2">{{ comment.timestamp }}</p>
+        <div class="post-line"></div>
+    {% endfor %}
+            <form method="POST" id="formID">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="comments-flex">
+                    <textarea id="id_body" class="div-profil-form-element-input2 div-profil-form-element-input5 div-profil-form-element-input6 div-profil-form-element-input7" name="body" required placeholder="Введите сообщение" maxlength="1000"></textarea>
+                    <button class="news-btn post-no-btn" type="submit"><a  href="#formID">Отправить</a></button>
+                </div>
+            </form>
+        </div>
+</div>
+    <script>
+        document.getElementById("div_id_author").style.display="none"
+        document.getElementById("div_id_post").style.display="none"
+        document.getElementById("div_id_body").style.display="none"
+    </script>
+{% endblock content %}

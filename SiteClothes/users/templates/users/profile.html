@@ -1,0 +1,53 @@
+{% extends "forum/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if user == request.user %}
+    <title>Профиль {{ user.username }}</title>
+    {% endif %}
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link rel="shortcut icon" href="{% static 'image/logo1.png' %}" type="image/x-icon">
+</head>
+{% block content %}
+<body>
+    <section class="section section-profil">
+        <div class="div-profil">
+            <h2 class="div-profil-title">Профиль {{ user.username }}</h2>
+            {% if user == request.user %}
+            <div class="profil-grid">
+                <div class="profil-grid1">
+                    <form class="div-profil-form-element-input44" method="post" id="profil" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ forma.image }}
+                    <img class="profil-img" src="{{ user.profile.image.url }}">
+                </div>
+                <div class="profil-grid2">
+                        <p class="user user4">Имя</p>
+                        {{ form.first_name }}
+                        <p class="user user4 user5">Фамилия</p>
+                        {{ form.last_name }}
+                        <p class="user user4 user5">Электронная почта</p>
+                        {{ form.email }}
+                    </form>
+                </div>
+                <button form="profil" class="news-btn profil-btn" type="submit">Сохранить</button>
+                <p class="news-btn  profil-btn"><a href="{% url 'logout' %}">Выйти из аккаунта</a></p>
+            </div>
+        </div>
+        {% else %}
+        <div class="account-div">
+            <img class="account-img" src="{{ user.profile.image.url }}" height="200">
+            <div class="profil-info">
+                <p class="profil-info1">{{ user.first_name }} {{ user.last_name }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+    </section>
+</body>
+{% endblock %}
+
+

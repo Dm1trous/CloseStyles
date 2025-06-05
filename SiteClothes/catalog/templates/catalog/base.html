@@ -1,0 +1,111 @@
+{% extends "forum/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="slider-container">
+            <div class="slides">
+                <div class="slide">
+                    <img src="{% static 'image/bckg3.png' %}" alt="Первый слайд" class="slide-image">
+                </div>
+                <div class="slide">
+                    <img src="{% static 'image/bckg1.png' %}" alt="Второй слайд" class="slide-image">
+                </div>
+                <div class="slide">
+                    <img src="{% static 'image/bckg2.png' %}" alt="Третий слайд" class="slide-image">
+                </div>
+                <div class="slide">
+                    <img src="{% static 'image/bckg3.png' %}" alt="Четвертый слайд" class="slide-image">
+                </div>
+            </div>
+            <a href="#section1"><h3 class="strelka">˅</h3></a>
+        </div>
+    </div>
+    <div class="under-slider" id="section1">
+        <p class="under-slider-text">★     CLOSE STYLE FASHION     ★     CLOSE STYLE FASHION     ★     CLOSE STYLE FASHION     ★     CLOSE STYLE FASHION     ★     CLOSE STYLE FASHION     ★</p>
+    </div>
+    <div class="content-width">
+        <div class="index-info-grids">
+            <div class="index-info-grid-content index-info-grid-content1">
+                <div class="index-info-grid-btn-group">
+                    <a href="/products/" class="index-info-grid-btn">Собрать образ</a>
+                </div>
+            </div>
+            <div class="index-info-grid-content index-info-grid-content2">
+                <div class="index-info-grid-btn-group">
+                    <a href="/products/" class="index-info-grid-btn">Собрать образ</a>
+                </div>
+            </div>
+            <div class="index-info-grid-content index-info-grid-content3">
+                <h3 class="index-info-grid-content-text">Стильная летняя женская одежда</h3>
+                <a class="index-info-grid-btn index-info-grid-btn2" href="/products/">В каталог</a>
+            </div>
+            <div class="index-info-grid-content index-info-grid-content4">
+                <h3 class="index-info-grid-content-text">Стильная летняя мужская одежда</h3>
+                <a class="index-info-grid-btn index-info-grid-btn2" href="/products/">В каталог</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-width content-width2">
+        <h1 class="new-clothes">Новинки</h1>
+        <div class="filter-group">
+<div class="filter-block" id="filter-section">
+   <a href="{% url 'catalog:index' %}?gender=all" class="filter-link {% if request.GET.gender != 'male' and request.GET.gender != 'female' %}active{% endif %}">Все</a>
+    <a href="{% url 'catalog:index' %}?gender=male" class="filter-link {% if request.GET.gender == 'male' %}active{% endif %}">Для мужчин</a>
+    <a href="{% url 'catalog:index' %}?gender=female" class="filter-link {% if request.GET.gender == 'female' %}active{% endif %}">Для женщин</a>
+</div>
+            <a href="/products/" class="filter-more">Больше →</a>
+            </div>
+        <div class="index-new-grids">
+            {% for product in latest_products %}
+                <div class="index-new-grid-content">
+                    <div class="product-card">
+                        <div class="image-wrapper">
+                            <img class="index-new-grid-content" src="{{ product.imgg.url }}" alt="{{ product.title }}" />
+                            <div class="overlay">
+                                <button class="btn-favorite btn-new">В избранное</button>
+                                {% if user.is_authenticated %}
+                                <button class="btn-cart" onclick="showModal({{ product.id }})">В корзину</button>
+                                {% else %}
+                                <button class="btn-cart" onclick="showModal({{ product.id }})">Войти в аккаунт</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="under-index-new-grids">
+                            <p class="under-index-new-grids-text under-index-new-grids-text-price">{{ product.summ }} ₽</p>
+                            <p class="under-index-new-grids-text">{{ product.title }}</p>
+                        </div>
+                    </div>
+                    <div id="cart-modal-{{ product.id }}" class="modal">
+                        <div class="modal-content">
+                            <span class="close-button" onclick="closeModal({{ product.id }})">&times;</span>
+                            <h2 class="modal-title">Выберите размер</h2>
+                            <div class="size-buttons">
+                                {% for size in product.sizee.all %}
+<button class="size-button"
+        onclick="addToCart({{ product.id }}, {{ size.id }}, '{% url 'catalog:add_to_cart' 0 %}', '{{ product.title }}')">
+    {{ size.name }}
+</button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Уведомление о добавлении в корзину -->
+    <div class="notification" id="notification">
+        <div class="notification-content">
+            <span class="notification-icon">✓</span>
+            <div>
+                <p class="notification-title">Товар добавлен в корзину</p>
+                <p class="notification-subtitle" id="notification-product-title" style="display:none"></p>
+            </div>
+            <a href="{% url 'catalog:view_cart' %}" class="view-cart-btn">Перейти в корзину</a>
+        </div>
+    </div>
+    <script src="{% static 'js/modal.js' %}"></script>
+    <script src="{% static 'js/slider.js' %}"></script>
+    <script src="{% static 'js/stop.js' %}"></script>
+{% endblock %}

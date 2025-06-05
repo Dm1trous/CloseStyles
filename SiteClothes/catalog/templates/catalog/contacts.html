@@ -1,0 +1,30 @@
+{% extends "forum/base.html" %}
+{% load static %}
+{% block content %}
+<section class="section section-contacts">
+        <div class="contacts-info">
+            <h2 class="carta-title contacts-title">Как с нами связаться</h2>
+            <div class="contacts-flex">
+                <div class="contacts-flex1">
+                    <h2 class="carta-title">Написать</h2>
+                    <p class="carta-text"><a href="mailto:closestyle@gmail.com"><span class="phone carta-text-mail">🖂</span> closestyle@gmail.com</a></p>
+                    <p class="carta-text"><a href="mailto:closestyle@mail.ru"><span class="phone carta-text-mail">🖂</span> closestyle@mail.ru</a></p>
+                </div>
+                <div class="contacts-flex1">
+                    <h2 class="carta-title">Позвонить</h2>
+                    <p class="carta-text"><a href="tel:89521324234"><span class="phone carta-text-phone">✆</span> +7 (952) 132-42-34</a></p>
+                    <p class="carta-text"><a href="tel:89014310969"><span class="phone carta-text-phone">✆</span> +7 (901) 431-09-69</a></p>
+                </div>
+                <div class="contacts-flex1">
+                    <h2 class="carta-title">Сотрудничать</h2>
+                    <p class="carta-text"><a href="mailto:closestyle@gmail.com"><span class="phone carta-text-mail">🖂</span> closesotr@gmail.com</a></p>
+                    <p class="carta-text"><a href="mailto:closestyle@mail.ru"><span class="phone carta-text-mail">🖂</span> closesotr@mail.ru</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="carta">
+            <h2 class="carta-title">Где мы находимся<br><p class="carta-text carta-text2"><img src="{% static 'image/carta2.png' %}" alt="" class="carta-img"> улица 40-летия Октября, 54 <img src="{% static 'image/carta2.png' %}" alt="" class="carta-img"></p></h2>
+            <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A03fe5035d1560d62e30a13eea562705d528f51bb02ef350f225c36061fdb61b0&amp;width=100%25&amp;height=372&amp;lang=ru_RU&amp;scroll=true"></script>
+        </div>
+    </section>
+{% endblock %}

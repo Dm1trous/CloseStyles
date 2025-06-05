@@ -1,0 +1,88 @@
+{% extends "forum/base.html" %}
+{% load static %}
+{% load my_filters %}
+{% block content %}
+<section class="section section-cart">
+    <div class="fake fake2"><br></div>
+    {% if cart_items %}
+    <div class="cart-big-group">
+        <div class="cart-group cart-group1">
+            <h3 class="cart-title">Корзина</h3>
+            <p class="cart-count">{{ total_quantity }} {{ total_quantity|pluralize_товар }}</p>
+            {% for item in cart_items %}
+            <div class="cart-grid">
+                <div class="cart-flex-group">
+                        <a href="{% url 'catalog:product_detail' item.product.id %}">
+                            <img class="cart-img" src="{{ item.product.imgg.url }}" alt="{{ item.product.title }}" />
+                        </a>
+                    <div class="cart-flex-column">
+                        <div class="cart-text-flex-column">
+                            <a href="{% url 'catalog:product_detail' item.product.id %}"><p class="cart-text-title">{{ item.product.title }}</p></a>
+                            <p class="cart-text-subtitle">{{ item.product.colorr }}</p>
+                            <p class="cart-text-subtitle">{{ item.size.name }} р.</p>
+                        </div>
+                        <div class="icons-cart-group">
+                            <a href="#"><img class="cart-group-png" src="{% static 'image/heart.png' %}"></a>
+                            <a href="{% url 'catalog:remove_from_cart' item.id %}"><img class="cart-group-png cart-group-png2" src="{% static 'image/die.png' %}"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="item-quantity">
+                    {% if item.quantity > 1 %}
+                    <a class="plus-minus minus" href="{% url 'catalog:minus_from_cart' item.id %}">-</a>
+                    <p class="div-cart-text">{{ item.quantity }}</p>
+                    <a class="plus-minus" href="{% url 'catalog:plus_from_cart' item.id %}">+</a>
+                    {% else %}
+                    <p class="plus-minus minus-none">-</p>
+                    <p class="div-cart-text">{{ item.quantity }}</p>
+                    <a class="plus-minus" href="{% url 'catalog:plus_from_cart' item.id %}">+</a>
+                    {% endif %}
+                </div>
+                <p class="cart-text-pricee">{{ item.product.summ|multiply:item.quantity }} ₽</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="cart-group cart-group2">
+            <h3 class="cart-title cart-title2">Оформление заказа</h3>
+            <div class="cart-summ-group">
+                <p class="cart-count">Товары, {{ total_quantity }} шт.</p>
+                <p class="cart-count cart-promo">{{ total_price }} ₽</p>
+            </div>
+            <div class="cart-summ-group">
+                <p class="cart-count">Скидка</p>
+                <p class="cart-count cart-promo">- {{ discount_amount }} ₽</p>
+            </div>
+            <p class="cart-count cart-promo">Промокод (если есть)</p>
+            <form action="{% url 'catalog:apply_promocode' %}" method="post" class="search-form promo-form">
+                {% csrf_token %}
+                <input type="text" class="search" name="promocode" placeholder="Введите промокод..."/>
+                <button type="submit" class="search-btn under-index-new-grids-btn">Применить</button>
+            </form>
+            <div class="cart-summ-group">
+                <h3 class="cart-title cart-title-summ">Итого</h3>
+                <h3 class="cart-title cart-title-summ">{{ final_total }} ₽</h3>
+            </div>
+            <a class="buy-link-btn" href="#">Заказать</a>
+        </div>
+        <div class="cart-group cart-group3">
+            <h3 class="cart-title">Способ доставки</h3>
+        </div>
+    </div>
+    {% else %}
+        <div class="cart-big-group">
+            <div class="cart-group cart-group1">
+                <h3 class="cart-title">Корзина</h3>
+                <p class="cart-count">{{ total_quantity }} {{ total_quantity|pluralize_товар }}</p>
+                <div class="cart-none-group">
+                    <p class="cart-none-text">В вашей корзине пока ничего нет</p>
+                    <a class="under-index-new-grids-btn cart-none-btn" href="/products/">Перейти в каталог</a>
+                </div>
+            </div>
+            <div class="cart-group cart-group2">
+                safasf
+            </div>
+        </div>
+    {% endif %}
+</section>
+<script src="{% static 'js/stop.js' %}"></script>
+{% endblock %}

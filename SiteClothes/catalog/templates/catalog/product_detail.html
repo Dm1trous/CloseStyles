@@ -1,0 +1,249 @@
+{% extends "forum/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="section section-product-detail">
+        <div class="fake fake2"><br></div>
+    <div class="product-detail-container">
+        <!-- Блок с изображением товара -->
+        <div class="product-gallery">
+            <div class="main-image">
+                <img src="{{ product.imgg.url }}" alt="{{ product.title }}" class="zoomable" id="mainProductImage">
+            </div>
+        </div>
+
+        <!-- Блок с информацией о товаре -->
+        <div class="product-info">
+            <!-- Хлебные крошки -->
+            <nav class="breadcrumbs">
+                <a href="/products/">Каталог</a> &gt;
+                <a href="{% url 'catalog:view_product' %}?category={{ product.catt.id }}">{{ product.catt }}</a> &gt;
+                <span>{{ product.title }}</span>
+            </nav>
+
+            <h1 class="product-title">{{ product.title }}</h1>
+            <div class="product-brand-rating">
+                <span class="brand">Бренд: {{ product.brendd }}</span>
+                <div class="rating">
+                    ★★★★☆ <span class="reviews-count">(42 отзыва)</span>
+                </div>
+            </div>
+
+            <div class="price-block">
+                <span class="current-price">{{ product.summ }} ₽</span>
+                {% if product.old_price %}
+                <span class="old-price">{{ product.old_price }} ₽</span>
+                <span class="discount-badge">-{{ product.discount_percent }}%</span>
+                {% endif %}
+            </div>
+
+            <!-- Блок с размерами -->
+            <div class="size-selector">
+                <div class="size-header">
+                    <span class="option-title">Размер:</span>
+                    <a href="#" class="size-guide-link">Таблица размеров</a>
+                </div>
+                <div class="size-options" id="sizeOptions">
+                    {% for size in product.sizee.all %}
+                        <button class="size-option"
+                                data-size-id="{{ size.id }}"
+                                onclick="selectSize(this, {{ size.id }})">
+                            {{ size.name }}
+                        </button>
+                    {% endfor %}
+                </div>
+                <div class="size-error" id="sizeError"></div>
+            </div>
+
+            <!-- Основные кнопки действий -->
+            <div class="action-buttons">
+                <button class="add-to-cart-btn" id="addToCartBtn" disabled onclick="addToCart()">
+                    <span class="cart-icon">🛒</span> Добавить в корзину
+                </button>
+                <button class="wishlist-btn">
+                    <span class="heart-icon">❤</span> В избранное
+                </button>
+            </div>
+
+            <!-- Детали доставки -->
+            <div class="delivery-info">
+                <div class="delivery-option">
+                    <span class="delivery-icon">🚚</span>
+                    <div>
+                        <strong>Доставка курьером</strong>
+                        <p>Завтра - 350 ₽</p>
+                    </div>
+                </div>
+                <div class="delivery-option">
+                    <span class="delivery-icon">🏪</span>
+                    <div>
+                        <strong>Самовывоз</strong>
+                        <p>Сегодня - бесплатно</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Дополнительная информация -->
+            <div class="product-meta">
+                <div class="meta-item">
+                    <span class="meta-title">Категория:</span>
+                    <span>{{ product.catt }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-title">Пол:</span>
+                    <span>{{ product.genderr }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-title">Материалы:</span>
+                    <span>{{ product.display_material }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-title">Артикул:</span>
+                    <span>CLOSE-{{ product.id }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Блок с описанием и характеристиками -->
+    <div class="product-tabs">
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="openTab('description')">Описание</button>
+            <button class="tab-btn" onclick="openTab('specs')">Характеристики</button>
+            <button class="tab-btn" onclick="openTab('reviews')">Отзывы</button>
+        </div>
+
+        <div class="tab-content active" id="description">
+            <h3>Описание товара</h3>
+            <p>{{ product.description|default:"Подробное описание товара будет здесь. Вы можете рассказать о качестве материалов, особенностях кроя, рекомендациях по уходу и других важных деталях." }}</p>
+        </div>
+
+        <div class="tab-content" id="specs">
+            <h3>Характеристики</h3>
+            <table class="specs-table">
+                <tr>
+                    <td>Бренд</td>
+                    <td>{{ product.brendd }}</td>
+                </tr>
+                <tr>
+                    <td>Состав</td>
+                    <td>{{ product.display_material }}</td>
+                </tr>
+                <tr>
+                    <td>Цвет</td>
+                    <td>{{ product.colorr }}</td>
+                </tr>
+                <tr>
+                    <td>Страна производства</td>
+                    <td>{{ product.countryy|default:"Китай" }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="tab-content" id="reviews">
+            <h3>Отзывы</h3>
+            <p>Здесь будут отображаться отзывы покупателей.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Всплывающее уведомление -->
+<div class="notification" id="notification">
+    <div class="notification-content">
+        <span class="notification-icon">✓</span>
+        <div>
+            <p class="notification-title">Товар добавлен в корзину</p>
+            <p class="notification-subtitle">{{ product.title }}</p>
+        </div>
+        <a href="{% url 'catalog:view_cart' %}" class="view-cart-btn">Перейти в корзину</a>
+    </div>
+</div>
+
+
+<script>
+let selectedSizeId = null;
+
+// Выбор размера
+function selectSize(element, sizeId) {
+    // Убираем выделение у всех размеров
+    document.querySelectorAll('.size-option').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+
+    // Добавляем выделение выбранному размеру
+    element.classList.add('selected');
+    selectedSizeId = sizeId;
+
+    // Активируем кнопку "Добавить в корзину"
+    document.getElementById('addToCartBtn').disabled = false;
+    document.getElementById('sizeError').textContent = '';
+}
+
+// Добавление в корзину
+function addToCart() {
+    if (!selectedSizeId) {
+        document.getElementById('sizeError').textContent = 'Пожалуйста, выберите размер';
+        return;
+    }
+
+    const productId = {{ product.id }};
+    const addUrl = '{% url "catalog:add_to_cart" product.id %}?size_id=' + selectedSizeId;
+
+    // Отправляем запрос
+    fetch(addUrl, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Показываем уведомление
+        const notification = document.getElementById('notification');
+        notification.classList.add('show');
+
+        // Скрываем через 5 секунд
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 5000);
+
+        // Обновляем счетчик корзины в шапке (если есть)
+        if (data.total_quantity) {
+            const cartCounter = document.querySelector('.cart-counter');
+            if (cartCounter) {
+                cartCounter.textContent = data.total_quantity;
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Произошла ошибка при добавлении товара в корзину');
+    });
+}
+
+// Переключение табов
+function openTab(tabId) {
+    // Скрываем все табы
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // Убираем активный класс у всех кнопок
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Показываем выбранный таб
+    document.getElementById(tabId).classList.add('active');
+
+    // Делаем кнопку активной
+    event.currentTarget.classList.add('active');
+}
+
+// Зум изображения товара
+document.getElementById('mainProductImage').addEventListener('click', function() {
+    this.classList.toggle('zoomed');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "forum/base.html" %}
+{% block content %}
+    <section class="section section-news">
+        <div class="fake"><br></div>
+        <div class="div-news-all">
+            {% for el in news %}
+            <div class="div-news">
+                <img class="news-img" src="{{ el.img.url }}" alt="">
+                <div class="news-title-text">
+                    <h2 class="news-title">{{ el.name }}</h2>
+                    <p class="news-text">{{ el.text }}</p>
+                    <div class="div-btn-news">
+                        <button class="news-btn"><a href="/products/">Каталог</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

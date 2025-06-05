@@ -1,0 +1,83 @@
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloseStyle</title>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link rel="shortcut icon" href="{% static 'image/logo1.png' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="index-div index-div1">
+            <ul class="index-div-list">
+                <div class="index-div-list-group1">
+                    <li class="index-div-list-item"><a href="/products/" class="index-div-list-item-text">Каталог</a></li>
+                    <li class="index-div-list-item"><a href="/forum/" class="index-div-list-item-text">Форум</a></li>
+                    <li class="index-div-list-item"><a href="/news/" class="index-div-list-item-text">Новости</a></li>
+                    <li class="index-div-list-item"><a href="/contacts/" class="index-div-list-item-text">Контакты</a></li>
+                </div>
+                <li><a href="/"><img src="{% static 'image/logo2.png' %}" alt="" class="index-div-logo"></a></li>
+                <div class="buy-profil">
+    {% if user.is_authenticated %}
+    <li><a href="/cart/"><img src="{% static 'image/heart.png' %}" alt="" class="index-div-profil border-img-header"></a></li>
+    {% else %}
+    <li><a href="/cart/"><img src="{% static 'image/heart.png' %}" alt="" class="index-div-profil border-img-header"></a></li>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <li class="cart-items">
+        <a href="/cart/" class="cart-links">
+            <img src="{% static 'image/buy.png' %}" alt="" class="index-div-profil border-img-header">
+            <span class="cart-counts">{{ total_quantity }}</span>
+        </a>
+    </li>
+    {% else %}
+    <li class="cart-items">
+        <a href="/cart/" class="cart-links">
+            <img src="{% static 'image/buy.png' %}" alt="" class="index-div-profil border-img-header">
+            <span class="cart-counts">0</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <li><a href="{% url 'profile' username=user.username %}"><img class="index-div-profil index-div-profil-round" src="{{ user.profile.image.url }}"></a></li>
+    {% else %}
+    <li><a href="{% url 'login' %}"><img src="{% static 'image/profil.png' %}" alt="" class="index-div-profil"></a></li>
+    {% endif %}
+</div>
+            </ul>
+        </div>
+    </header>
+    <section class="section">
+            {% block content %}
+            {% endblock %}
+    </section>
+<footer class="footer">
+    <div class="footer-content">
+                <div class="footer-content-grid">
+            <img src="{% static 'image/logo4.png' %}" class="footer-img">
+        </div>
+        <div class="footer-content-grid">
+            <p class="footer-content-title">Написать</p>
+            <a href="mailto:closestyle@gmail.com" class="footer-content-text"> closestyle@gmail.com</a>
+            <a href="mailto:closestyle@mail.ru" class="footer-content-text"> closestyle@mail.ru</a>
+        </div>
+                <div class="footer-content-grid">
+                    <p class="footer-content-title">Позвонить</p>
+                    <a href="tel:89521324234" class="footer-content-text"> +7 (952) 132-42-34</a>
+                    <a href="tel:89014310969" class="footer-content-text"> +7 (901) 431-09-69</a>
+        </div>
+                <div class="footer-content-grid">
+                    <p class="footer-content-title">Сотрудничать</p>
+                    <a href="mailto:closestyle@gmail.com" class="footer-content-text">closesotr@gmail.com</a>
+                    <a href="mailto:closestyle@mail.ru" class="footer-content-text"> closesotr@mail.ru</a>
+        </div>
+
+    </div>
+
+</footer>
+</body>
+</html>
