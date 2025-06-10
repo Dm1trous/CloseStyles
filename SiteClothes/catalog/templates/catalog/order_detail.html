@@ -1,0 +1,76 @@
+{% extends "catalog/base.html" %}
+{% load static %}
+{% load my_filters %}
+
+{% block content %}
+<section class="section section-cart">
+    <div class="fake fake2"><br></div>
+    <div class="container">
+    </div>
+
+    {% if order_success_message %}
+        <div id="order-success-notification" data-message="{{ order_success_message|escapejs }}"></div>
+    {% endif %}
+
+    {% if order_items %}
+    <div class="cart-big-group">
+        <!-- Левый блок: Состав заказа -->
+        <div class="cart-group cart-group1">
+            <h1 class="favorites-title">
+                Детали заказа №{{ order.id }} от {{ order.created_at|date:"d.m.Y" }}
+            </h1>
+            <h3 class="cart-title">Состав заказа</h3>
+            <p class="cart-count cart-count4">Статус: {{ order.get_status_display }}</p>
+            <p class="cart-count cart-count4">Способ получения: Самовывоз</p>
+
+            {% for item in order_items %}
+            <div class="cart-grid">
+                <div class="cart-flex-group">
+                    <a href="{% url 'catalog:product_detail' item.product.id %}">
+                        <img class="cart-img" src="{{ item.product.imgg.url }}" alt="{{ item.product.title }}" />
+                    </a>
+                    <div class="cart-flex-column">
+                        <div class="cart-text-flex-column">
+                            <a href="{% url 'catalog:product_detail' item.product.id %}"><p class="cart-text-title">{{ item.product.title }}</p></a>
+                            <p class="cart-text-subtitle">{{ item.product.colorr }}</p>
+                            <p class="cart-text-subtitle">Размер: {{ item.size }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="item-quantity">
+                    <p class="div-cart-text">{{ item.quantity }} шт.</p>
+                </div>
+                <p class="cart-text-pricee">{{ item.get_cost|floatformat:0 }} ₽</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Правый блок: Итог по заказу -->
+        <div class="cart-group cart-group2">
+            <h3 class="cart-title cart-title2">Итог по заказу</h3>
+            <div class="cart-summ-group">
+                <p class="cart-count">Товары, {{ total_order_quantity }} шт.</p>
+                <p class="cart-count">{{ subtotal|floatformat:0 }} ₽</p>
+            </div>
+            {% if order.promocode %}
+            <div class="cart-summ-group">
+                <p class="cart-count">Скидка ({{ order.promocode.code }}):</p>
+                <p class="cart-count cart-promo">- {{ discount_amount|floatformat:0 }} ₽</p>
+            </div>
+            {% endif %}
+            <div class="cart-summ-group cart-summ-group2">
+                <h3 class="cart-title">Итого</h3>
+                <h3 class="cart-title cart-title-summ">{{ final_total|floatformat:0 }} ₽</h3>
+            </div>
+            <a class="buy-link-btn" href="{% url 'catalog:order_list' %}">К списку моих заказов</a>
+        </div>
+    </div>
+    {% else %}
+        <p>В этом заказе нет товаров.</p>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block page_scripts %}
+    <script src="{% static 'js/order_success.js' %}"></script>
+{% endblock %}

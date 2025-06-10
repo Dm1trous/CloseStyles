@@ -1,28 +1,33 @@
-{% extends "forum/base.html" %}
+{% extends "catalog/base.html" %}
+{% load crispy_forms_tags %}
 {% load static %}
-{% block content %}
 
-    <section class="section section-profil">
-        <div class="div-profil">
-            <h2 class="div-profil-title">Войти в аккаунт</h2>
-            <form method="post" class="div-profil-form">
+{% block content %}
+<div class="auth-page-wrapper">
+    <div class="auth-container">
+        <div class="auth-form-container">
+            <div class="auth-header">
+                <a href="{% url 'catalog:index' %}">
+                    <img src="{% static 'image/logo2.png' %}" alt="Логотип" class="auth-logo">
+                </a>
+                <h1 class="form-title">С возвращением!</h1>
+                <p class="form-subtitle">Войдите в свой аккаунт, чтобы продолжить</p>
+            </div>
+
+            <form method="POST" class="auth-form">
                 {% csrf_token %}
-                <div class="div-profil-form-element">
-                    <label for="username-field" class="div-profil-form-element-label">Логин:</label>
-                    <input id="username-field" class="div-profil-form-element-input1" name="username" type="text" placeholder="Введите логин"/>
+
+                {{ form|crispy }}
+
+                <div class="form-group">
+                    <button class="btn-submit" type="submit">Войти</button>
                 </div>
-                <div class="div-profil-form-element">
-                    <label for="password-field" class="div-profil-form-element-label">Пароль:</label>
-                    <input id="password-field" class="div-profil-form-element-input2" name="password" type="password" placeholder="Введите пароль"/>
-                </div>
-                {% if form.errors %}
-                    <p style="color: red">Неверный логин или пароль</p>
-                {% endif %}
-                <button type="submit" class="div-profil-btn1">Войти</button>
-                <p class="div-text">Нет аккаунта?<a href="{% url 'registration' %}" class="div-profil-btn2"> Зарегистрироваться</a></p>
             </form>
+
+            <div class="auth-link">
+                <small>Впервые у нас? <a href="{% url 'register' %}">Создать аккаунт</a></small>
+            </div>
         </div>
-    </section>
-    {% endblock %}
+    </div>
 </div>
-</body>
+{% endblock %}

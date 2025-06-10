@@ -1,0 +1,86 @@
+{% extends "catalog/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="section section-favorites">
+    <div class="fake fake2"><br></div>
+    <div class="favorites-container">
+        <h1 class="favorites-title">Избранное</h1>
+
+         {% if user.is_authenticated %}
+        <!-- Список избранных товаров -->
+        {% if favorites %}
+        <div class="favorites-items">
+            {% for item in favorites %}
+            <div class="favorite-item" data-product-id="{{ item.product.id }}">
+                <div class="item-image">
+                    <a href="{% url 'catalog:product_detail' item.product.id %}">
+                        <img src="{{ item.product.imgg.url }}" alt="{{ item.product.title }}"
+                             style="{% if not item.product.is_in_stock %}filter: grayscale(100%); opacity: 0.6;{% endif %}">
+                    </a>
+                </div>
+                <div class="item-details">
+                    <div class="item-header">
+                        <h3 class="item-title">
+                            <a href="{% url 'catalog:product_detail' item.product.id %}">{{ item.product.title }}</a>
+                        </h3>
+                         <a href="#" onclick="removeFromFavoritesPage({{ item.product.id }}, '{{ csrf_token }}')">
+                            <img class="cart-group-png cart-group-png2" src="{% static 'image/die.png' %}">
+                         </a>
+                    </div>
+
+                    {% if not item.product.is_in_stock %}
+                        <div class="item-brand" style="color: #e53935; font-weight: 600;">Товар закончился</div>
+                    {% endif %}
+
+                    <div class="item-brand">{{ item.product.brendd }}</div>
+                    <div class="item-price">{{ item.product.summ|floatformat:"0" }} ₽</div>
+
+                    <div class="item-actions">
+                        <div class="size-selector">
+                            <select class="size-select" id="sizeSelect{{ item.product.id }}" {% if not item.product.is_in_stock %}disabled{% endif %}>
+                                <option value="">Выберите размер</option>
+                                {% for stock_item in item.product.stock_set.all %}
+                                    {% if stock_item.quantity > 0 %}
+                                    <option value="{{ stock_item.size.id }}">{{ stock_item.size.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <div class="size-error" id="sizeError{{ item.product.id }}"></div>
+                        </div>
+                        <button class="add-to-cart-from-fav"
+                                onclick="addToCartFromFavorites({{ item.product.id }}, '{% url "catalog:add_to_cart" 0 %}')"
+                                {% if not item.product.is_in_stock %}disabled style="background-color: #ccc; cursor: not-allowed; border-color: #ccc;"{% endif %}>
+                            <span class="cart-icon">🛒</span> В корзину
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+       <!-- Заглушка для пустого избранного у авторизованного пользователя -->
+            {% else %}
+            <div class="empty-favorites">
+                <div class="empty-icon">❤</div>
+                <h3>Ваш список избранного пуст</h3>
+                <p>Добавляйте понравившиеся товары, нажимая на соответствующую кнопку</p>
+                <a href="{% url 'catalog:view_product' %}" class="browse-btn">Перейти в каталог</a>
+            </div>
+            {% endif %}
+        {% else %}
+            <!-- Заглушка для неавторизованного пользователя -->
+            <div class="empty-favorites">
+                <div class="empty-icon">❤</div>
+                <h3>Войдите, чтобы увидеть избранное</h3>
+                <p>Сохраняйте понравившиеся товары, чтобы не потерять их</p>
+                <a href="{% url 'login' %}?next={{ request.path }}" class="browse-btn">Войти в аккаунт</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{% static 'js/favorites-page.js' %}"></script>
+{% endblock %}

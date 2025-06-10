@@ -1,25 +1,43 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.urls import reverse
-from django.utils import timezone
-from django.utils.timezone import localtime
+from django.db.models import Sum
 
+class InStockManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(statuss=True)
+
+class Stock(models.Model):
+    product = models.ForeignKey('clothes', on_delete=models.CASCADE, verbose_name="Товар")
+    size = models.ForeignKey('size', on_delete=models.CASCADE, verbose_name="Размер")
+    quantity = models.PositiveIntegerField(default=0, verbose_name="Количество на складе")
+
+    class Meta:
+        verbose_name = "Складской остаток"
+        verbose_name_plural = "Складские остатки"
+        unique_together = ('product', 'size')
+
+    def __str__(self):
+        return f"{self.product.title} - Размер: {self.size.name} ({self.quantity} шт.)"
 
 class clothes(models.Model):
     title = models.CharField(max_length=200, verbose_name="Название")
     description = models.CharField(max_length=2000, verbose_name="Описание", null=True, blank=True)
-    summ = models.IntegerField(verbose_name="Стоимость")
+    summ = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Стоимость") # Изменено на DecimalField для точности
+    old_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Старая цена", null=True, blank=True)
     catt = models.ForeignKey('cat', on_delete=models.CASCADE, verbose_name="Категория")
     genderr = models.ForeignKey('gender', on_delete=models.CASCADE, verbose_name="Для")
-    sizee = models.ManyToManyField('size', verbose_name="Размер", related_name='size')
+    sizee = models.ManyToManyField('size', verbose_name="Размер", related_name='size', blank=True)
     materiall = models.ManyToManyField('material', verbose_name="Материал")
     colorr = models.ForeignKey('color', on_delete=models.CASCADE, verbose_name="Цвет")
     brendd = models.ForeignKey('brend', on_delete=models.CASCADE, verbose_name="Бренд")
-    countryy = models.ForeignKey('country', on_delete=models.CASCADE, verbose_name="Страна производитель", null=True)
+    countryy = models.ForeignKey('country', on_delete=models.CASCADE, verbose_name="Страна производитель", null=True, blank=True)
     statuss = models.BooleanField(default=True, verbose_name="В наличии")
     imgg = models.ImageField(verbose_name="Фото", upload_to='image/')
     dates = models.DateTimeField(auto_now=True)
+    available_sizes = models.ManyToManyField('size', through='Stock', through_fields=('product', 'size'), verbose_name="Доступные размеры и их количество")
 
+    objects = models.Manager()
+    in_stock = InStockManager()
 
     def display_size(self):
         return ', '.join([sizee.name for sizee in self.sizee.all()])
@@ -28,6 +46,19 @@ class clothes(models.Model):
     def display_material(self):
         return ', '.join([materiall.name for materiall in self.materiall.all()])
     display_material.short_description = 'материал'
+
+    @property
+    def is_in_stock(self):
+        if not self.statuss:
+            return False
+        total_quantity = self.stock_set.aggregate(total=Sum('quantity'))['total']
+        return total_quantity is not None and total_quantity > 0
+
+    @property
+    def discount_percent(self):
+        if self.old_price and self.summ < self.old_price:
+            return round((1 - self.summ / self.old_price) * 100)
+        return 0
 
     class Meta:
         verbose_name = 'Одежду'
@@ -109,58 +140,33 @@ class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
     size = models.ForeignKey(size, on_delete=models.PROTECT, blank=True, null=True, verbose_name="Размер")
     date_added = models.DateTimeField(auto_now_add=True)
+
     class Meta:
-        verbose_name = 'Корзина'
+        verbose_name = 'Корзину'
         verbose_name_plural = 'Корзина'
 
-    def __str__(self):
-        return f'{self.quantity} x {self.product.title}'
+    @property
+    def is_size_available(self):
+        if self.product and self.size:
+            try:
+                stock_item = Stock.objects.get(product=self.product, size=self.size)
+                return stock_item.quantity >= self.quantity
+            except Stock.DoesNotExist:
+                return False
+        return False
 
-
-class Topic(models.Model):
-    title = models.CharField(max_length=50, verbose_name="Заголовок")
-
-    def get_absolute_url(self):
-        return reverse('catalog:topic-detail', kwargs={'pk': self.pk})
-
-    class Meta:
-        verbose_name = 'Заголовок категории форума'
-        verbose_name_plural = 'Заголовок категории форума'
-
-    def __str__(self):
-        return self.title
-
-
-class Post(models.Model):
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name="Пользователь")
-    topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, null=True, verbose_name="Заголовок")
-    timestamp = models.DateTimeField(default=timezone.now, verbose_name="Время")
-    title = models.CharField(max_length=50, verbose_name="Заголовок поста")
-    body = models.TextField(blank=True, null=True, verbose_name="Текст поста")
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    product = models.ForeignKey(clothes, on_delete=models.CASCADE, verbose_name="Товар")
+    date_added = models.DateTimeField(auto_now_add=True, verbose_name="Дата добавления")
 
     class Meta:
-        verbose_name = 'Пост пользователя'
-        verbose_name_plural = 'Пост пользователя'
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранные товары'
+        unique_together = ('user', 'product')
 
     def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse('catalog:post-detail', kwargs={'pk': self.pk})
-
-
-class Comment(models.Model):
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name="Пользователь")
-    post = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True, verbose_name="Пост")
-    timestamp = models.DateTimeField(default=timezone.now, verbose_name="Время")
-    body = models.TextField(verbose_name="Сообщение")
-
-    class Meta:
-        verbose_name = 'Коментарии под посты'
-        verbose_name_plural = 'Коментарии под посты'
-
-    def __str__(self):
-        return self.body
+        return f"{self.user.username} - {self.product.title}"
 
 class PromoCode(models.Model):
     code = models.CharField(max_length=50, unique=True, verbose_name="Код")
@@ -174,3 +180,49 @@ class PromoCode(models.Model):
 
     def __str__(self):
         return self.code
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('processing', 'Собирается'),
+        ('shipped', 'Готов к выдаче'),
+        ('delivered', 'Выдан'),
+        ('cancelled', 'Отменен'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Итоговая стоимость")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='processing', verbose_name="Статус заказа")
+    promocode = models.ForeignKey(PromoCode, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Промокод")
+
+    @property
+    def total_items_quantity(self):
+        return sum(item.quantity for item in self.items.all())
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Заказ №{self.id} (самовывоз) от {self.user.username}"
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, verbose_name="Заказ")
+    product = models.ForeignKey(clothes, on_delete=models.PROTECT, verbose_name="Товар")
+    size = models.CharField(max_length=20, verbose_name="Размер")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена за единицу")
+    quantity = models.PositiveIntegerField(default=1, verbose_name="Количество")
+
+    class Meta:
+        verbose_name = 'Позиция заказа'
+        verbose_name_plural = 'Позиции заказов'
+
+    def __str__(self):
+        return f'{self.product.title} ({self.size})'
+
+    def get_cost(self):
+        if self.price is not None and self.quantity is not None:
+            return self.price * self.quantity
+        return 0

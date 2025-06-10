@@ -1,73 +1,61 @@
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth import authenticate
-from django.contrib.auth import login as auth_login
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-
-
 from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm
+from catalog.views import get_cart_quantity, get_favorites_quantity
+from django.db.models import Sum, Count
 
 
-
-def registration(request):
+def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}!')
-            authenticate(username=form.cleaned_data['username'],
-                         password=form.cleaned_data['password1'],
-                        )
-            auth_login(request, user)
+            form.save()
             return redirect('login')
     else:
         form = UserRegistrationForm()
-    return render(request, 'users/registration.html', {'form': form})
+    return render(request, 'users/register.html', {'form': form})
 
-def login(request):
-    return render(request, 'users/login.html')
 
-def profile(request, username=None):
+@login_required
+def profile_view(request, username):
+    profile_user = get_object_or_404(User, username=username)
+    is_own_profile = (request.user == profile_user)
+    completed_orders = profile_user.order_set.filter(status='delivered')
+    completed_orders_count = completed_orders.count()
+    total_spent_data = completed_orders.aggregate(total_sum=Sum('total_price'))
+    total_spent = total_spent_data['total_sum'] or 0
+
+    context = {
+        'profile_user': profile_user,
+        'is_own_profile': is_own_profile,
+        'completed_orders_count': completed_orders_count,
+        'total_spent': total_spent,
+
+        'total_quantity': get_cart_quantity(request.user),
+        'favorites_quantity': get_favorites_quantity(request.user)
+    }
+    return render(request, 'users/profile_view.html', context)
+
+
+@login_required
+def profile_edit(request):
     if request.method == 'POST':
-        form = UserUpdateForm(request.POST, instance=request.user)
-        forma = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-
-        if form.is_valid() and forma.is_valid():
-            form.save()
-            forma.save()
-            messages.success(request, f'Данные обновлены!')
-            return redirect('profile', username=request.user.username)
-
-
-        return redirect('profile', username=request.user.username)
-
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('profile_view', username=request.user.username)
     else:
-        form = UserUpdateForm()
-        forma = ProfileUpdateForm()
-        context = {
-            'form': form,
-            'forma': forma,
-        }
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
 
-        if request.user.username == username:
-            form = UserUpdateForm(instance=request.user)
-            forma = ProfileUpdateForm(instance=request.user.profile)
-
-            context['form'] = form
-            context['forma'] = forma
-
-        if username is not None:
-            user = User.objects.get(username=username)
-            context['user'] = user
-
-    if request.user.is_authenticated:
-        cart_items = CartItem.objects.filter(user=request.user)
-        total_quantity = sum(item.quantity for item in cart_items)
-        context['total_quantity'] = total_quantity
-        context['form'] = form
-        context['forma'] = forma
-
-        return render(request, "users/profile.html", context)
-
-    return render(request, 'users/profile.html', context)
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'title': 'Редактирование профиля',
+        'total_quantity': get_cart_quantity(request.user),
+        'favorites_quantity': get_favorites_quantity(request.user)
+    }
+    return render(request, 'users/profile_edit.html', context)

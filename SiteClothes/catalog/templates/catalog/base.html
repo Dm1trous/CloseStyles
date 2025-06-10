@@ -1,111 +1,126 @@
-{% extends "forum/base.html" %}
 {% load static %}
-{% block content %}
-    <div class="container mt-5">
-        <div class="slider-container">
-            <div class="slides">
-                <div class="slide">
-                    <img src="{% static 'image/bckg3.png' %}" alt="Первый слайд" class="slide-image">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloseStyle</title>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link rel="shortcut icon" href="{% static 'image/logo1.png' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+<button class="mobile-menu-toggle" id="mobile-menu-toggle">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+
+    <!-- Шапка -->
+    <header class="header">
+        <div class="index-div index-div1">
+            <ul class="index-div-list">
+                <div class="index-div-list-group1">
+                    <li class="index-div-list-item"><a href="{% url 'catalog:view_product' %}" class="index-div-list-item-text">Каталог</a></li>
+                    <li class="index-div-list-item"><a href="{% url 'catalog:news' %}" class="index-div-list-item-text">Новости</a></li>
+                    <li class="index-div-list-item"><a href="{% url 'catalog:contacts' %}" class="index-div-list-item-text">О нас</a></li>
                 </div>
-                <div class="slide">
-                    <img src="{% static 'image/bckg1.png' %}" alt="Второй слайд" class="slide-image">
+                <li><a href="{% url 'catalog:index' %}"><img src="{% static 'image/logo2.png' %}" alt="Логотип" class="index-div-logo"></a></li>
+                    <div class="buy-profil">
+                    <li class="favorite-items">
+                        {% comment %} Для гостя ссылка ведет на страницу входа {% endcomment %}
+                        <a href="{% if user.is_authenticated %}{% url 'catalog:favorites' %}{% else %}{% url 'login' %}?next={{ request.path }}{% endif %}" class="favorite-links">
+                            <img src="{% static 'image/heart.png' %}" alt="Избранное" class="index-div-profil border-img-header">
+                            <span class="favorite-counts">{{ favorites_quantity|default:0 }}</span>
+                        </a>
+                    </li>
+                    <li class="cart-items">
+                        {% comment %} Для гостя ссылка ведет на страницу входа {% endcomment %}
+                        <a href="{% if user.is_authenticated %}{% url 'catalog:view_cart' %}{% else %}{% url 'login' %}?next={{ request.path }}{% endif %}" class="cart-links">
+                            <img src="{% static 'image/buy.png' %}" alt="Корзина" class="index-div-profil border-img-header">
+                            <span class="cart-counts">{{ total_quantity|default:0 }}</span>
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li>
+                            <a href="{% url 'profile_view' user.username %}">
+                                <img class="index-div-profil index-div-profil-round" src="{{ user.profile.image.url }}">
+                            </a>
+                        </li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}?next={{ request.path }}"><img src="{% static 'image/profil.png' %}" alt="Профиль" class="index-div-profil"></a></li>
+                    {% endif %}
                 </div>
-                <div class="slide">
-                    <img src="{% static 'image/bckg2.png' %}" alt="Третий слайд" class="slide-image">
-                </div>
-                <div class="slide">
-                    <img src="{% static 'image/bckg3.png' %}" alt="Четвертый слайд" class="slide-image">
-                </div>
-            </div>
-            <a href="#section1"><h3 class="strelka">˅</h3></a>
+            </ul>
         </div>
-    </div>
-    <div class="under-slider" id="section1">
-        <p class="under-slider-text">★     CLOSE STYLE FASHION     ★     CLOSE STYLE FASHION     ★     CLOSE STYLE FASHION     ★     CLOSE STYLE FASHION     ★     CLOSE STYLE FASHION     ★</p>
-    </div>
-    <div class="content-width">
-        <div class="index-info-grids">
-            <div class="index-info-grid-content index-info-grid-content1">
-                <div class="index-info-grid-btn-group">
-                    <a href="/products/" class="index-info-grid-btn">Собрать образ</a>
-                </div>
+    </header>
+
+    <nav class="mobile-menu" id="mobile-menu">
+    <ul>
+        <li><a href="{% url 'catalog:index' %}" style="font-weight: bold;">Главная</a></li>
+        <li><a href="{% url 'catalog:view_product' %}">Каталог</a></li>
+        <li><a href="{% url 'catalog:news' %}">Новости</a></li>
+        <li><a href="{% url 'catalog:contacts' %}">О нас</a></li>
+        <li class="mobile-menu-divider"></li>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'profile_view' user.username %}">Профиль</a></li>
+            <li><a href="{% url 'catalog:order_list' %}">Мои заказы</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Войти / Регистрация</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Подвал -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-content-grid">
+                <img src="{% static 'image/logo4.png' %}" class="footer-img">
             </div>
-            <div class="index-info-grid-content index-info-grid-content2">
-                <div class="index-info-grid-btn-group">
-                    <a href="/products/" class="index-info-grid-btn">Собрать образ</a>
-                </div>
+            <div class="footer-content-grid">
+                <p class="footer-content-title">Навигация</p>
+                <a href="{% url 'catalog:view_product' %}" class="footer-content-text">Каталог</a>
+                <a href="{% url 'catalog:news' %}" class="footer-content-text">Новости</a>
+                <a href="{% url 'catalog:contacts' %}" class="footer-content-text">О нас</a>
             </div>
-            <div class="index-info-grid-content index-info-grid-content3">
-                <h3 class="index-info-grid-content-text">Стильная летняя женская одежда</h3>
-                <a class="index-info-grid-btn index-info-grid-btn2" href="/products/">В каталог</a>
+            <div class="footer-content-grid">
+                <p class="footer-content-title">Написать</p>
+                <a href="mailto:closestyle@gmail.com" class="footer-content-text">closestyle@gmail.com</a>
+                <a href="mailto:closestyle@mail.ru" class="footer-content-text">closestyle@mail.ru</a>
             </div>
-            <div class="index-info-grid-content index-info-grid-content4">
-                <h3 class="index-info-grid-content-text">Стильная летняя мужская одежда</h3>
-                <a class="index-info-grid-btn index-info-grid-btn2" href="/products/">В каталог</a>
+            <div class="footer-content-grid">
+                <p class="footer-content-title">Позвонить</p>
+                <a href="tel:89521324234" class="footer-content-text">+7 (952) 132-42-34</a>
+                <a href="tel:89014310969" class="footer-content-text">+7 (901) 431-09-69</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="copyright">© CloseStyle 2025</p>
+        </div>
+    </footer>
+
+    <div class="notification" id="global-notification">
+        <div class="notification-content">
+            <span class="notification-icon"></span>
+            <div>
+                <p class="notification-title"></p>
+                <p class="notification-subtitle"></p>
             </div>
         </div>
     </div>
 
-    <div class="content-width content-width2">
-        <h1 class="new-clothes">Новинки</h1>
-        <div class="filter-group">
-<div class="filter-block" id="filter-section">
-   <a href="{% url 'catalog:index' %}?gender=all" class="filter-link {% if request.GET.gender != 'male' and request.GET.gender != 'female' %}active{% endif %}">Все</a>
-    <a href="{% url 'catalog:index' %}?gender=male" class="filter-link {% if request.GET.gender == 'male' %}active{% endif %}">Для мужчин</a>
-    <a href="{% url 'catalog:index' %}?gender=female" class="filter-link {% if request.GET.gender == 'female' %}active{% endif %}">Для женщин</a>
-</div>
-            <a href="/products/" class="filter-more">Больше →</a>
-            </div>
-        <div class="index-new-grids">
-            {% for product in latest_products %}
-                <div class="index-new-grid-content">
-                    <div class="product-card">
-                        <div class="image-wrapper">
-                            <img class="index-new-grid-content" src="{{ product.imgg.url }}" alt="{{ product.title }}" />
-                            <div class="overlay">
-                                <button class="btn-favorite btn-new">В избранное</button>
-                                {% if user.is_authenticated %}
-                                <button class="btn-cart" onclick="showModal({{ product.id }})">В корзину</button>
-                                {% else %}
-                                <button class="btn-cart" onclick="showModal({{ product.id }})">Войти в аккаунт</button>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="under-index-new-grids">
-                            <p class="under-index-new-grids-text under-index-new-grids-text-price">{{ product.summ }} ₽</p>
-                            <p class="under-index-new-grids-text">{{ product.title }}</p>
-                        </div>
-                    </div>
-                    <div id="cart-modal-{{ product.id }}" class="modal">
-                        <div class="modal-content">
-                            <span class="close-button" onclick="closeModal({{ product.id }})">&times;</span>
-                            <h2 class="modal-title">Выберите размер</h2>
-                            <div class="size-buttons">
-                                {% for size in product.sizee.all %}
-<button class="size-button"
-        onclick="addToCart({{ product.id }}, {{ size.id }}, '{% url 'catalog:add_to_cart' 0 %}', '{{ product.title }}')">
-    {{ size.name }}
-</button>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    <!-- Уведомление о добавлении в корзину -->
-    <div class="notification" id="notification">
-        <div class="notification-content">
-            <span class="notification-icon">✓</span>
-            <div>
-                <p class="notification-title">Товар добавлен в корзину</p>
-                <p class="notification-subtitle" id="notification-product-title" style="display:none"></p>
-            </div>
-            <a href="{% url 'catalog:view_cart' %}" class="view-cart-btn">Перейти в корзину</a>
-        </div>
-    </div>
-    <script src="{% static 'js/modal.js' %}"></script>
-    <script src="{% static 'js/slider.js' %}"></script>
-    <script src="{% static 'js/stop.js' %}"></script>
-{% endblock %}
+    <script src="{% static 'js/notifications.js' %}"></script>
+    <script src="{% static 'js/cart.js' %}"></script>
+    <script src="{% static 'js/favorites.js' %}"></script>
+    <script src="{% static 'js/scroll-saver.js' %}"></script>
+    <script src="{% static 'js/search.js' %}"></script>
+    <script src="{% static 'js/burger.js' %}"></script>
+
+    {% block page_scripts %}{% endblock %}
+</body>
+</html>

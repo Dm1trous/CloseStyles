@@ -1,30 +1,113 @@
-{% extends "forum/base.html" %}
+{% extends "catalog/base.html" %}
 {% load static %}
+
 {% block content %}
-<section class="section section-contacts">
-        <div class="contacts-info">
-            <h2 class="carta-title contacts-title">Как с нами связаться</h2>
-            <div class="contacts-flex">
-                <div class="contacts-flex1">
-                    <h2 class="carta-title">Написать</h2>
-                    <p class="carta-text"><a href="mailto:closestyle@gmail.com"><span class="phone carta-text-mail">🖂</span> closestyle@gmail.com</a></p>
-                    <p class="carta-text"><a href="mailto:closestyle@mail.ru"><span class="phone carta-text-mail">🖂</span> closestyle@mail.ru</a></p>
+<section class="section-contacts">
+    <div class="fake fake2"><br></div>
+    <div class="contacts-container">
+
+        <div class="contacts-header">
+            <h1><span>Наши контакты</span></h1>
+            <p>Мы всегда рады помочь вам и ответить на любые вопросы. Свяжитесь с нами удобным для вас способом!</p>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="contacts-content">
+            <div class="company-info">
+                <h2><span>О компании</span><span></span></h2>
+                <div>
+                    <h3>Наша миссия</h3>
+                    <p>Мы создаем стиль, который говорит о вас. Наша миссия - помочь каждому клиенту найти свою уникальную манеру одеваться, сочетая последние тренды с индивидуальным подходом.</p>
                 </div>
-                <div class="contacts-flex1">
-                    <h2 class="carta-title">Позвонить</h2>
-                    <p class="carta-text"><a href="tel:89521324234"><span class="phone carta-text-phone">✆</span> +7 (952) 132-42-34</a></p>
-                    <p class="carta-text"><a href="tel:89014310969"><span class="phone carta-text-phone">✆</span> +7 (901) 431-09-69</a></p>
+                <div>
+                    <h3>История</h3>
+                    <p>CloseStyle — это молодой проект, рожденный из большой мечты в 2024 году. Наш путь начинается с одного уютного магазина, где мы стремимся создать не просто место для покупок, а настоящее комьюнити для ценителей стиля. Мы только в начале, но уже гордимся тем, что строим бренд, основанный на качестве, уникальности и личном подходе к каждому гостю.</p>
                 </div>
-                <div class="contacts-flex1">
-                    <h2 class="carta-title">Сотрудничать</h2>
-                    <p class="carta-text"><a href="mailto:closestyle@gmail.com"><span class="phone carta-text-mail">🖂</span> closesotr@gmail.com</a></p>
-                    <p class="carta-text"><a href="mailto:closestyle@mail.ru"><span class="phone carta-text-mail">🖂</span> closesotr@mail.ru</a></p>
+                <div class="stats-container">
+                    <div class="stat-item"><div class="stat-number">>20</div><div class="stat-label">брендов в коллекции</div></div>
+                    <div class="stat-item"><div class="stat-number">1</div><div class="stat-label">флагманский магазин</div></div>
+                    <div class="stat-item"><div class="stat-number">∞</div><div class="stat-label">вдохновения в каждой вещи</div></div>
+                </div>
+            </div>
+
+            <!-- Способы связи -->
+            <div class="contact-methods">
+                <div class="contact-card">
+                    <div class="contact-info">
+                        <div class="contact-icon phone-icon"><span>✆</span></div>
+                        <div>
+                            <h3>Телефон</h3>
+                            <div><a href="tel:89521324234"><span>+7 (952) 132-42-34</span></a><a href="tel:89014310969"><span>+7 (901) 431-09-69</span></a></div>
+                        </div>
+                    </div>
+                    <div><p>Часы работы колл-центра: Пн-Пт 9:00-21:00, Сб-Вс 10:00-20:00</p></div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-info">
+                        <div class="contact-icon email-icon"><span>✉</span></div>
+                        <div>
+                            <h3>Электронная почта</h3>
+                            <div><a href="mailto:closestyle@gmail.com"><span>closestyle@gmail.com</span></a><a href="mailto:closestyle@mail.ru"><span>closestyle@mail.ru</span></a></div>
+                        </div>
+                    </div>
+                    <div><p>Отвечаем в течение 1 рабочего дня</p></div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-info">
+                        <div class="contact-icon social-icon"><span>👥</span></div>
+                        <div>
+                            <h3>Социальные сети</h3>
+                            <div class="social-links">
+                                <a href="#" class="social-link" style="background: #3b5998;">f</a><a href="#" class="social-link" style="background: #e4405f;">in</a>
+                                <a href="#" class="social-link" style="background: #25d366;">wa</a><a href="#" class="social-link" style="background: #0088cc;">tg</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="carta">
-            <h2 class="carta-title">Где мы находимся<br><p class="carta-text carta-text2"><img src="{% static 'image/carta2.png' %}" alt="" class="carta-img"> улица 40-летия Октября, 54 <img src="{% static 'image/carta2.png' %}" alt="" class="carta-img"></p></h2>
-            <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A03fe5035d1560d62e30a13eea562705d528f51bb02ef350f225c36061fdb61b0&amp;width=100%25&amp;height=372&amp;lang=ru_RU&amp;scroll=true"></script>
+
+        <!-- Карта -->
+        <div class="map-section">
+            <div class="map-container">
+                <div class="map-content">
+                    <div class="address-info">
+                        <h2><span>Наш магазин</span><span></span></h2>
+                        <div><h3>Адрес</h3><p><span>📍</span><span>улица 40-летия Октября, 54, Екатеринбург, Россия</span></p></div>
+                        <div>
+                            <h3>Часы работы</h3>
+                            <div><p class="hours-row"><span>Пн-Пт:</span> <span>10:00 - 21:00</span></p><p class="hours-row"><span>Сб-Вс:</span> <span>11:00 - 20:00</span></p></div>
+                        </div>
+                        <div>
+                            <h3>Как добраться</h3>
+                            <p>Ближайшая станция метро "Уралмаш" (15 минут пешком). Рядом большая парковка.</p>
+                            <button class="route-button">Построить маршрут<span>→</span></button>
+                        </div>
+                    </div>
+                    <div><script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A03fe5035d1560d62e30a13eea562705d528f51bb02ef350f225c36061fdb61b0&width=100%&height=100%&lang=ru_RU&scroll=true"></script></div>
+                </div>
+            </div>
         </div>
-    </section>
+
+        <!-- FAQ -->
+        <div class="faq-section">
+            <h2>Частые вопросы</h2>
+            <div>
+                <div class="faq-item">
+                    <button class="faq-question"><span>Как сделать заказ?</span><span>+</span></button>
+                    <div class="faq-answer"><div class="faq-answer-content"><p>Вы можете сделать заказ через наш сайт, добавив товары в корзину и оформив покупку, или позвонив по телефону нашего колл-центра. Также доступен заказ через мессенджеры.</p></div></div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question"><span>Какие способы оплаты доступны?</span><span>+</span></button>
+                    <div class="faq-answer"><div class="faq-answer-content"><p>Мы принимаем наличные, банковские карты (Visa, Mastercard, МИР), Apple Pay, Google Pay, а также безналичный расчет для юридических лиц.</p></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<link rel="stylesheet" href="{% static 'css/contacts.css' %}">
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{% static 'js/accordion.js' %}"></script>
 {% endblock %}

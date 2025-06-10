@@ -1,0 +1,33 @@
+{% extends "catalog/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="auth-page-wrapper">
+    <div class="auth-container">
+        <div class="auth-form-container">
+            <div class="auth-header">
+                <a href="{% url 'catalog:index' %}">
+                    <img src="{% static 'image/logo2.png' %}" alt="Логотип" class="auth-logo">
+                </a>
+                <h1 class="form-title">Создайте аккаунт</h1>
+                <p class="form-subtitle">Присоединяйтесь к нам и откройте мир стиля</p>
+            </div>
+
+            <form method="POST" class="auth-form" novalidate>
+                {% csrf_token %}
+
+                {{ form|crispy }}
+
+                <div class="form-group">
+                    <button class="btn-submit" type="submit">Зарегистрироваться</button>
+                </div>
+            </form>
+
+            <div class="auth-link">
+                <small>Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

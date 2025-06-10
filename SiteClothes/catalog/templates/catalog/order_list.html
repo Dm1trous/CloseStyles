@@ -1,0 +1,73 @@
+{% extends "catalog/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="section section-favorites">
+    <div class="fake fake2"><br></div>
+    <div class="favorites-container">
+        <h1 class="favorites-title">Мои заказы</h1>
+
+        <!-- Список заказов -->
+        {% if orders %}
+        <div class="favorites-items">
+            {% for order in orders %}
+            <div class="favorite-item order-card-item">
+                <!-- Блок слева -->
+                <div class="item-image order-placeholder">
+                    <div class="order-placeholder-content">
+                        <span class="order-placeholder-id">№ {{ order.id }}</span>
+                        <span class="order-placeholder-date">{{ order.created_at|date:"d.m.Y" }}</span>
+                    </div>
+                </div>
+
+                <!-- Блок справа -->
+                <div class="item-details">
+                    <div class="item-headers">
+                        <div class="item-header">
+                            <h3 class="item-title">
+                                Заказ от {{ order.created_at|date:"d E Y" }}
+                            </h3>
+                            <div class="order-list-status">
+                                <div class="status-with-icon status-{{ order.status }}">
+                                    <span class="status-icon">
+                                        {% if order.status == 'processing' %}⏳{% endif %}
+                                        {% if order.status == 'shipped' %}📦{% endif %}
+                                        {% if order.status == 'delivered' %}✔️{% endif %}
+                                        {% if order.status == 'cancelled' %}❌{% endif %}
+                                    </span>
+                                    <span>{{ order.get_status_display }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="item-brand">
+                            {{ order.total_items_quantity }} шт. в заказе
+                        </div>
+
+                        <div class="item-price">
+                            {{ order.total_price|floatformat:0 }} ₽
+                        </div>
+                    </div>
+
+                    <div class="item-actions">
+                        <a href="{% url 'catalog:order_detail' order.id %}" class="add-to-cart-from-fav">
+                            Посмотреть детали
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Заглушка, если заказов нет -->
+        {% else %}
+        <div class="empty-favorites">
+            <div class="empty-icon">📦</div>
+            <h3>У вас еще нет заказов</h3>
+            <p>Самое время это исправить!</p>
+            <a href="{% url 'catalog:view_product' %}" class="browse-btn">Перейти в каталог</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
