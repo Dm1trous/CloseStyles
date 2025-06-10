@@ -152,5 +152,3 @@ LOGOUT_REDIRECT_URL = 'catalog:index'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-MEDIA_URL = '/image/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'image') # Это все еще нужно, даже если файлы не хранятся локально
