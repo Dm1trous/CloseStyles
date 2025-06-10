@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ['closestyle.onrender.com', 'localhost', '127.0.0.1']
 INSTALLED_APPS = [
     'catalog.apps.CatalogConfig',
     'users.apps.UsersConfig',
+    'cloudinary',
+    'cloudinary_storage',
     'crispy_forms',
     'crispy_bootstrap4',
     'django.contrib.admin',
@@ -41,8 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cloudinary',
-    'cloudinary_storage',
 ]
 
 CLOUDINARY_STORAGE = {
