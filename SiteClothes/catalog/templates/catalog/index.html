@@ -57,9 +57,9 @@
     <h1 class="new-clothes">Новинки</h1>
     <div class="filter-group">
         <div class="filter-block" id="filter-section">
-           <a href="{% url 'catalog:index' %}?gender=all#filter-section" class="filter-link {% if request.GET.gender != 'male' and request.GET.gender != 'female' %}active{% endif %}">Все</a>
-           <a href="{% url 'catalog:index' %}?gender=male#filter-section" class="filter-link {% if request.GET.gender == 'male' %}active{% endif %}">Для мужчин</a>
-           <a href="{% url 'catalog:index' %}?gender=female#filter-section" class="filter-link {% if request.GET.gender == 'female' %}active{% endif %}">Для женщин</a>
+           <a href="{% url 'catalog:index' %}?gender=all" class="filter-link {% if request.GET.gender != 'male' and request.GET.gender != 'female' %}active{% endif %}">Все</a>
+           <a href="{% url 'catalog:index' %}?gender=male" class="filter-link {% if request.GET.gender == 'male' %}active{% endif %}">Для мужчин</a>
+           <a href="{% url 'catalog:index' %}?gender=female" class="filter-link {% if request.GET.gender == 'female' %}active{% endif %}">Для женщин</a>
         </div>
         <a href="{% url 'catalog:view_product' %}" class="filter-more">Больше →</a>
     </div>
